@@ -18,10 +18,17 @@ handle_zero:
     int 0x10
     iret
 
+handle_one:
+    mov ah, 0eh
+    mov al, 'V'
+    mov bx, 0x00
+    int 0x10
+    iret
+
 step2:
     cli ; clear interrupts
 
-    mov ax, 0x07C0
+    mov ax, 0x7c0
     mov ds, ax
     mov es, ax
 
@@ -31,11 +38,14 @@ step2:
 
     sti ; enable interrupts
 
-    mov word[ss:0x00], handle_zero
+    mov word[ss:0x00], handle_zero ; bc ss is 0x00
     mov word[ss:0x02], 0x7c0
 
-    int 0 
-    
+    mov word[ss:0x04], handle_one ; bc each int is 4 bytes
+    mov word[ss:0x06], 0x7c0
+
+    int 1
+
     mov si, message
     call print
     jmp $
