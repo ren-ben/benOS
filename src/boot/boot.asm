@@ -73,6 +73,12 @@ load32:
     mov ss, ax
     mov ebp, 0x00200000
     mov esp, ebp
+
+    ; enable A20 line
+    in al, 0x92 ; read from port 0x92 (bus)
+    or al, 2 ; set bit 1
+    out 0x92, al ; write to port 0x92 (bus)
+
     jmp $
 
 times 510-($-$$) db 0
