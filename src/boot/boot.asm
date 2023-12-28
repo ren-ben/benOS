@@ -62,24 +62,72 @@ gdt_descriptor:
     dw gdt_end - gdt_start-1 ; size of GDT
     dd gdt_start ; start of GDT
 
-[BITS 32]
+[BITS 32] ; 32-bit code
 
+; writing our loading driver 
 load32:
-    mov ax, DATA_SEG
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov ebp, 0x00200000
-    mov esp, ebp
+    mov eax, 1 ; starting sector
+    mov ecx, 100 ; number of sectors to read
+    mov edi, 0x0100000 ; destination address to load sectors into
+    call ata_lba_read
+    jmp CODE_SEG:0x0100000 ; jump to loaded sectors
 
-    ; enable A20 line
-    in al, 0x92 ; read from port 0x92 (bus)
-    or al, 2 ; set bit 1
-    out 0x92, al ; write to port 0x92 (bus)
+ata_lba_read:
+    ; send highest 8 bits to hd controller
+    mov ebx, eax ; backup the LBA
+    shr eax, 24 ; shift eax right 24 bits (highest 8 bits of LBA are left)
+    or eax, 0xe0 ; set highest 3 bits to 1 (LBA mode) -> select master drive
+    mov dx, 0x1f6 ; port hd controller
+    out dx, al ; send highest 8 bits of LBA to port hd controller (bus)
 
-    jmp $
+    ; send total sectors to read
+    mov eax, ecx ; backup total sectors to read
+    mov dx, 0x1f2 ; port 
+    out dx, al ; send total sectors to read to port hd controller (bus)
+
+    ; send LBA to hd controller
+    mov eax, ebx ; restore LBA
+    mov dx, 0x1f3 ; port 
+    out dx, al ; send LBA to port hd controller (bus)
+
+    ; send next 8 bits of LBA to hd controller
+    mov dx, 0x1f4 ; port 
+    mov eax, ebx ; restore LBA
+    shr eax, 8 ; shift eax right 8 bits (next 8 bits of LBA are left)
+    out dx, al ; send next 8 bits of LBA to port hd controller (bus)
+
+    ; send upper 16 bits of LBA to hd controller
+    mov dx, 0x1f5 ; port
+    mov eax, ebx ; restore LBA
+    shr eax, 16 ; shift eax right 16 bits (upper 16 bits of LBA are left)
+    out dx, al ; send upper 16 bits of LBA to port hd controller (bus)
+
+    mov dx, 0x1f7 ; port
+    mov al, 0x20 ; read with retry
+    out dx, al ; send read with retry command to port hd controller (bus)
+
+    ; read all sectors into memory
+
+.next_sector:
+    push ecx ; backup ecx
+
+.try_again:
+    mov dx, 0x1f7 ; port
+    in al, dx ; read status from port hd controller (bus)
+    test al, 8 ; test if error bit is set
+    jz .try_again ; if not set, try again
+
+; read 256 words at a time
+    mov cx, 256 ; read 256 words at a time
+    mov dx, 0x1f0 ; port
+    rep insw ; read 256 words from port hd controller (bus) into memory
+    ; do the insw instruction 256 times (word = 2bytes, 2*256=512 bytes=1 sector)
+
+    pop ecx ; restore ecx
+    loop .next_sector ; loop until all sectors are read
+
+    ret
+
 
 times 510-($-$$) db 0
 
