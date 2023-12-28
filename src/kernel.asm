@@ -1,5 +1,6 @@
 [BITS 32]
 global _start ; tell linker entry point
+extern kernel_main ; tell linker where to find kernel_start
 CODE_SEG equ 0x08
 DATA_SEG equ 0x10
 
@@ -18,4 +19,7 @@ _start:
     or al, 2 ; set bit 1
     out 0x92, al ; write to port 0x92 (bus)
 
+    call kernel_main
     jmp $
+
+    times 512-($-$$) db 0 ; for solving allignment isues
