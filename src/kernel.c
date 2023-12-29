@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include "idt/idt.h"
 #include "io/io.h"
+#include "memory/heap/kheap.h"
 
 //a pointer to vmemory
 uint16_t* video_memory = 0;
@@ -68,6 +69,9 @@ void print(const char* str) {
 void kernel_main() {
     ter_init();
     print("Hello, World!");
+
+    // initialize the kernel heap
+    kheap_init();
 
     // initialize the IDT
     idt_init();
