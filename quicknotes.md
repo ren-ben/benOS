@@ -22,3 +22,5 @@
 ## programmable interrupt controller
 
 - allows hardware to interrupt the processor
+- master handles irq 0-7
+- slave handles irq 8-15

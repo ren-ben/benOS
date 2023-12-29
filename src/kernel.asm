@@ -19,6 +19,19 @@ _start:
     or al, 2 ; set bit 1
     out 0x92, al ; write to port 0x92 (bus)
 
+    ; remap master PIC
+    mov al, 00010001b ; ICW1
+    out 0x20, al ; write to master PIC command port
+
+    mov al, 0x20 ; int 0x20 is where master isr starts
+    out 0x21, al ; write to master PIC data port
+
+    mov al, 00000001b
+    out 0x21, al
+
+    ; enable interrupts
+    sti
+
     call kernel_main
     jmp $
 
