@@ -18,3 +18,7 @@
 
 - describes how interrupts are invoked in protected mode
 - think of an array of interrupt descriptors
+
+## programmable interrupt controller
+
+- allows hardware to interrupt the processor
