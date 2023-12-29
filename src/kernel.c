@@ -75,4 +75,7 @@ void kernel_main() {
 
     // initialize the IDT
     idt_init();
+
+    // enable interrupts
+    enable_interrupts();
 }
