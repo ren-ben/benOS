@@ -1,12 +1,13 @@
 #include "kernel.h"
 #include <stdint.h>
 #include <stddef.h>
+#include "idt/idt.h"
 
 //a pointer to vmemory
 uint16_t* video_memory = 0;
 
-uint16_t ter_row;
-uint16_t ter_column;
+uint16_t ter_row = 0;
+uint16_t ter_column = 0;
 
 //outputs a character to the screen
 uint16_t ter_make_character(char character, char color) {
@@ -66,4 +67,7 @@ void print(const char* str) {
 void kernel_main() {
     ter_init();
     print("Hello, World!");
+
+    // initialize the IDT
+    idt_init();
 }

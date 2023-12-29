@@ -13,3 +13,8 @@
     - 0xb8001 = 0x00
 - when defining them, you can define both the color and the char at once, but you gotta be careful cuz of little endianess (color first, then char)
   > example: for char 0x41 and color 0x03 we would say `video mem[0] = 0x0341;`
+
+## Interrupt Descriptor Table
+
+- describes how interrupts are invoked in protected mode
+- think of an array of interrupt descriptors
