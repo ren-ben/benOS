@@ -4,6 +4,7 @@
 #include "idt/idt.h"
 #include "io/io.h"
 #include "memory/heap/kheap.h"
+#include "memory/paging/paging.h"
 
 //a pointer to vmemory
 uint16_t* video_memory = 0;
@@ -65,6 +66,7 @@ void print(const char* str) {
     }
 }
 
+static struct paging_4gb_chunk* kernel_chunk = 0;
 
 void kernel_main() {
     ter_init();
@@ -75,6 +77,11 @@ void kernel_main() {
 
     // initialize the IDT
     idt_init();
+
+    //setup paging
+    kernel_chunk = paging_new_4gb(PAGING_IS_WRITABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    paging_4g_chunk_get_dir(kernel_chunk);
+    paging_switch(kernel_chunk->directory_entry);
 
     // enable interrupts
     enable_interrupts();

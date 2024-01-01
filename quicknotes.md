@@ -72,3 +72,22 @@
 - if for example we need 8192 we also need to find an entry with a free block next to it.
 - once we have the two we mark those as taken
 - we now return the abs address that the start block represents. Calculation: (heap_data_start_addr + (block_number \* block_size))
+
+## Paging
+
+- allows to remap memory addresses to point to other memory addresses
+- can be used to provide the illusion that you have the maximum amount of ram installed
+- can be used to hide memory from other processes
+
+### remapping memory
+
+- allows to remap one mem addr to another. So 0x100000 could point to 0x200000
+- paging works in 4096 blocks by default. The blocks are called pages
+- when
+
+### benefits
+
+- each process can access the same virtual memory addresses, never writing over eachother
+- security.
+- can be used to prevent overwriting sensitive data such as program code
+- etc.
