@@ -78,11 +78,26 @@ void kernel_main() {
     // initialize the IDT
     idt_init();
 
-    //setup paging
+    // setup paging
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     paging_4g_chunk_get_dir(kernel_chunk);
     paging_switch(kernel_chunk->directory_entry);
+    char* ptr = kzalloc(4096);
+    paging_set(paging_4g_chunk_get_dir(kernel_chunk), (void*)0x1000, (uint32_t)ptr | PAGING_IS_WRITABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
 
+    // enable paging
+    enable_paging();
+
+    /*
+    char* ptr2 = (char*) 0x1000;
+    ptr2[0] = 'a';
+    ptr2[1] = 'b';
+    print(ptr2);
+    print(ptr);
+
+    -> ptr and ptr2 are the same address
+    */
+   
     // enable interrupts
     enable_interrupts();
 }

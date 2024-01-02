@@ -1,5 +1,6 @@
 #include "paging.h"
 #include "../heap/kheap.h"
+#include "../../status.h"
 
 void paging_load_directory(uint32_t* dir);
 static uint32_t* curr_dir = 0;
@@ -30,4 +31,45 @@ void paging_switch(uint32_t* directory) {
 
 uint32_t* paging_4g_chunk_get_dir(struct paging_4gb_chunk* chunk) {
     return chunk->directory_entry;
+}
+
+bool paging_is_alligned(void* addr) {
+    return ((uint32_t)addr % PAGING_PAGE_SIZE) == 0;
+}
+
+int paging_get_indexes(void* v_address, uint32_t* dir_i_out, uint32_t* table_i_out) {
+    int res = 0;
+    if (!paging_is_alligned(v_address)) {
+        res = -EINVARG;
+        goto out;
+    }
+
+    //reminder: 1024 * 4096 = total number of bytes in the 4gb directory
+
+    *dir_i_out = ((uint32_t)v_address / (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE));
+    *table_i_out = ((uint32_t)v_address % (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE) / PAGING_PAGE_SIZE);
+out:
+    return res;
+}
+
+//set the value of a page table entry in a page directory
+int paging_set(uint32_t* dir, void* virt, uint32_t val) {
+    if (!paging_is_alligned(virt))
+    {
+        return -EINVARG;
+    }
+
+    uint32_t dir_i = 0;
+    uint32_t table_i = 0;
+    int res = paging_get_indexes(virt, &dir_i, &table_i);
+    if (res < 0)
+    {
+        return res;
+    }
+
+    uint32_t entry = dir[dir_i];
+    uint32_t* table = (uint32_t*)(entry & 0xFFFFF000);
+    table[table_i] = val;
+
+    return 0;
 }
