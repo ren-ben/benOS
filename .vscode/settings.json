@@ -1,6 +1,10 @@
 {
   "files.associations": {
     "kernel.h": "c",
-    "io.h": "c"
+    "io.h": "c",
+    "string.h": "c",
+    "config.h": "c",
+    "paging.h": "c",
+    "streamer.h": "c"
   }
 }

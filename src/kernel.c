@@ -9,6 +9,7 @@
 #include "disk/disk.h"
 #include "fs/pparser.h"
 #include "disk/streamer.h"
+#include "fs/file.h"
 
 //a pointer to vmemory
 uint16_t* video_memory = 0;
@@ -70,6 +71,9 @@ void kernel_main() {
     // initialize the kernel heap
     kheap_init();
 
+    // initialize the filesystem
+    fs_init();
+
     // search and initialize the disk
     disk_search_and_init();
 
@@ -99,10 +103,4 @@ void kernel_main() {
 
     // enable interrupts
     enable_interrupts();
-
-    struct path_root* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
-
-    if (root_path) {
-
-    }
 }
