@@ -5,6 +5,7 @@
 #include "io/io.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
+#include "disk/disk.h"
 
 //a pointer to vmemory
 uint16_t* video_memory = 0;
@@ -70,10 +71,12 @@ static struct paging_4gb_chunk* kernel_chunk = 0;
 
 void kernel_main() {
     ter_init();
-    print("Hello, World!");
 
     // initialize the kernel heap
     kheap_init();
+
+    // search and initialize the disk
+    disk_search_and_init();
 
     // initialize the IDT
     idt_init();
@@ -82,8 +85,9 @@ void kernel_main() {
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     paging_4g_chunk_get_dir(kernel_chunk);
     paging_switch(kernel_chunk->directory_entry);
-    char* ptr = kzalloc(4096);
-    paging_set(paging_4g_chunk_get_dir(kernel_chunk), (void*)0x1000, (uint32_t)ptr | PAGING_IS_WRITABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+
+    /*char* ptr = kzalloc(4096);
+    paging_set(paging_4g_chunk_get_dir(kernel_chunk), (void*)0x1000, (uint32_t)ptr | PAGING_IS_WRITABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);*/
 
     // enable paging
     enable_paging();
@@ -97,7 +101,7 @@ void kernel_main() {
 
     -> ptr and ptr2 are the same address
     */
-   
+
     // enable interrupts
     enable_interrupts();
 }
