@@ -3,9 +3,11 @@
 #include <stddef.h>
 #include "idt/idt.h"
 #include "io/io.h"
+#include "string/string.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
 #include "disk/disk.h"
+#include "fs/pparser.h"
 
 //a pointer to vmemory
 uint16_t* video_memory = 0;
@@ -52,14 +54,6 @@ void ter_init() {
     }
 }
 
-// gets the length of a string
-size_t strlen(const char* str) {
-    size_t len = 0;
-    while (str[len])
-        len++;
-    return len;
-}
-
 // prints a string to the screen
 void print(const char* str) {
     for (size_t i = 0; i < strlen(str); i++) {
@@ -104,4 +98,10 @@ void kernel_main() {
 
     // enable interrupts
     enable_interrupts();
+
+    struct path_root* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
+
+    if (root_path) {
+
+    }
 }

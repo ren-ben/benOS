@@ -91,3 +91,12 @@
 - security.
 - can be used to prevent overwriting sensitive data such as program code
 - etc.
+
+# fat16
+
+- first sector is the **boot sector** on a disk. Fields also exist there that describe the fs such as how many reserved sectors follow this sector
+- then there are the **reserved sectors** -> ignored by the fs.
+- Now we have our first allocation table, it contains values that represent which clusters on the disk are taken and which are free. (Cluster = certain number of sectors joined together)
+- Next file allocation table, it's optional though (as backup)
+- Now comes the root directory, which explains what files/dirs are in root. Each entry has a relative name that represents the file or dir name, attributes such as read only, the address of the first cluster representing the data, etc.
+- finally, we have our **data region**. all the data is here.
