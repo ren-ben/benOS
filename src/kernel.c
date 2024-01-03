@@ -8,6 +8,7 @@
 #include "memory/paging/paging.h"
 #include "disk/disk.h"
 #include "fs/pparser.h"
+#include "disk/streamer.h"
 
 //a pointer to vmemory
 uint16_t* video_memory = 0;
