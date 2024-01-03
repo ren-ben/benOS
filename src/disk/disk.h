@@ -1,6 +1,8 @@
 #ifndef DISK_H
 #define DISK_H
 
+#include "../fs/file.h"
+
 typedef unsigned int BENOS_DISK_TYPE;
 
 //stands for a real physical hard disk
@@ -9,6 +11,8 @@ typedef unsigned int BENOS_DISK_TYPE;
 struct disk {
     BENOS_DISK_TYPE type;
     int sector_size;
+
+    struct filesystem* filesystem;
 };
 
 struct disk* disk_get(int index);
