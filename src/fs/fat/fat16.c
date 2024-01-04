@@ -3,6 +3,8 @@
 #include "../../status.h"
 #include "disk/disk.h"
 #include "disk/streamer.h"
+#include "memory/memory.h"
+#include "memory/heap/kheap.h"
 #include <stdint.h>
 
 #define BENOS_FAT16_SIGNATURE 0x29
@@ -122,8 +124,144 @@ struct filesystem* fat16_init() {
     return &fat16_fs;
 };
 
+static void fat16_init_private(struct disk* disk, struct fat_private* private) {
+    memset(private, 0, sizeof(struct fat_private));
+    private->cluster_read_stream = diskstreamer_new(disk->id);
+    private->fat_read_stream = diskstreamer_new(disk->id);
+    private->dir_stream = diskstreamer_new(disk->id);
+}
+
+int fat16_sector_to_abs(struct disk* disk, int sector) {
+    //abs sector address e.g. s1=0, s2=512, s3=1024, etc.
+    return sector * disk->sector_size;
+}
+
+int fat16_get_total_items_for_dir(struct disk* disk, uint32_t dir_start_sector) {
+    struct fat_dir_item item;
+    struct fat_dir_item empty_item;
+    memset(&empty_item, 0, sizeof(empty_item));
+
+    struct fat_private* fat_private = disk->fs_private;
+    int res = 0;
+    int i = 0;
+    int dir_start_pos = dir_start_sector * disk->sector_size;
+
+    struct disk_stream* stream = fat_private->dir_stream;
+    if (diskstreamer_seek(stream, dir_start_pos) != BENOS_ALL_OK) {
+        res = -EIO;
+        goto out;
+    }
+
+    while (1) {
+        if (diskstreamer_read(stream, &item, sizeof(item)) != BENOS_ALL_OK) {
+            res = -EIO;
+            goto out;
+        }
+
+        if (item.fname[0] == 0x00) {
+            //done
+            break;
+        }
+
+        if (item.fname[0] == 0xE5) {
+            //skip (item unused)
+            continue;
+        }
+
+        i++;
+    }
+    
+    res = i;
+
+out:
+    return res;
+}
+
+int fat16_get_root_dir(struct disk* disk, struct fat_private* fat_private, struct fat_dir* dir) {
+    int res = 0;
+    struct fat_header* primary_header = &fat_private->header.primary_header;
+    int root_dir_sector_pos = (primary_header->fat_copies + primary_header->sectors_per_fat) + primary_header->reserved_sectors;
+    int root_dir_entries = fat_private->header.primary_header.root_dir_entries;
+    int root_dir_size = root_dir_entries * sizeof(struct fat_dir_item);
+    int total_sectors = root_dir_size / disk->sector_size;
+
+    // if the root dir size is not a multiple of the sector size, we need to add one more sector
+    if (root_dir_size % disk->sector_size) {
+        total_sectors++;
+    }
+
+    int total_items = fat16_get_total_items_for_dir(disk, root_dir_sector_pos);
+
+    struct fat_dir_item* dir_item = kzalloc(root_dir_size);
+
+    if (!dir_item) {
+        res = -ENOMEM;
+        goto out;
+    }
+
+    struct disk_stream* stream = fat_private->dir_stream;
+
+    if(diskstreamer_seek(stream, fat16_sector_to_abs(disk, root_dir_sector_pos)) != BENOS_ALL_OK) {
+        res = -EIO;
+        goto out;
+    }
+
+    if(diskstreamer_read(stream, dir_item, root_dir_size) != BENOS_ALL_OK) {
+        res = -EIO;
+        goto out;
+    }
+
+    //everything is ok, set the dir
+    dir->items = dir_item;
+    dir->total = total_items;
+    dir->sector_pos = root_dir_sector_pos;
+    dir->ending_sector_pos = root_dir_sector_pos + (root_dir_size / disk->sector_size);
+
+
+out:
+    return res;
+}
+
 int fat16_resolve(struct disk* disk) {
-    return -EIO;
+    int res = 0;
+    struct fat_private* fat_private = kzalloc(sizeof(struct fat_private));
+    fat16_init_private(disk, fat_private);
+
+    disk->fs_private = fat_private;
+    //binded the filesystem to the disk
+    disk->filesystem = &fat16_fs;
+
+    struct disk_stream* stream = diskstreamer_new(disk->id);
+    if (!stream) {
+        res =  -EIO;
+        goto out;
+    }
+
+    if(diskstreamer_read(stream, &fat_private->header, sizeof(fat_private->header)) != BENOS_ALL_OK) {
+        res = -EIO;
+        goto out;
+    }
+
+    if(fat_private->header.shared.extended_header.signature != 0x29) {
+        res = -EFSNOTUS;
+        goto out;
+    }
+
+    if(fat16_get_root_dir(disk, fat_private, &fat_private->root_dir) != BENOS_ALL_OK) {
+        res = -EIO;
+        goto out;
+    }
+
+
+out:
+    if (stream) {
+        diskstreamer_close(stream);
+    }
+    if (res < 0) {
+        kfree(fat_private);
+        disk->fs_private = 0;
+    }
+    return res;
 }
 
 void* fat16_open(struct disk* disk, struct path_part* path, FILE_MODE mode) {

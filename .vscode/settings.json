@@ -5,6 +5,9 @@
     "string.h": "c",
     "config.h": "c",
     "paging.h": "c",
-    "streamer.h": "c"
+    "streamer.h": "c",
+    "memory.h": "c",
+    "disk.h": "c",
+    "kheap.h": "c"
   }
 }

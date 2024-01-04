@@ -86,6 +86,15 @@ struct filesystem* fs_resolve(struct disk* disk) {
     return fs;
 }
 
+//opening a file in c (locate correct filesystem, call open)
 int fopen(const char* filename, const char* mode) {
-    return -EIO;
+    int res = 0;
+    struct path_part* root_path = pathparser_parse(filename, NULL);
+    if (!root_path) {
+        res = -EINVARG;
+        goto out;
+    }
+
+out:
+    return res;
 }
