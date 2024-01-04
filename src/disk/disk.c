@@ -14,8 +14,9 @@ int disk_read_sector(int lba, int total, void* buffer) {
     //send the lba
     outb(0x1F2, total);
     outb(0x1F3, (unsigned char)(lba & 0xFF));
-    outb(0x1F4, (unsigned char)((lba >> 8) & 0xFF));
-    outb(0x1F5, (unsigned char)((lba >> 16) & 0xFF));
+    outb(0x1F4, (unsigned char)(lba >> 8));
+    outb(0x1F5, (unsigned char)(lba >> 16));
+    outb(0x1F7, 0x20);
    
    unsigned short* ptr = (unsigned short*)buffer;
     for (int i = 0; i < total; i++) {
@@ -38,7 +39,6 @@ int disk_read_sector(int lba, int total, void* buffer) {
 
 //searches for a disk and initializes it
 void disk_search_and_init() {
-    print("\nInitializing disk...");
     memset(&disk, 0, sizeof(disk));
     disk.type = BENOS_DISK_TYPE_REAL;
     disk.sector_size = BENOS_SECTOR_SIZE;
@@ -48,10 +48,10 @@ void disk_search_and_init() {
 
 //gets a disk with a specific index
 struct disk* disk_get(int index) {
-    if (index == 0) {
-        return &disk;
+    if (index != 0) {
+        return 0;
     }
-    return 0;
+    return &disk;
 }
 
 int disk_read_block(struct disk* idisk, unsigned int lba, int total, void* buffer) {
@@ -61,3 +61,4 @@ int disk_read_block(struct disk* idisk, unsigned int lba, int total, void* buffe
 
     return disk_read_sector(lba, total, buffer);
 }
+
