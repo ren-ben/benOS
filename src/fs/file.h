@@ -36,10 +36,14 @@ struct file_descriptor {
     int index;
     struct filesystem* fs;
     void* private_data;
+
+    // disk that the file descriptor should be used on
+    struct disk* disk;
 };
 
 void fs_init();
 void fs_insert_fs(struct filesystem* fs);
 struct filesystem* fs_resolve(struct disk* disk);
+int fopen(const char* filename, const char* mode_str);
 
 #endif

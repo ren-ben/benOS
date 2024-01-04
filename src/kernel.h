@@ -9,4 +9,9 @@ void print(const char* str);
 
 #define BENOS_MAX_PATH 108
 
+//macros for error handling
+#define ERROR(value) (void*) (value)
+#define ERROR_I(value) (int) (value)
+#define ISERR(value) ((int) value < 0)
+
 #endif

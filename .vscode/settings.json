@@ -8,6 +8,18 @@
     "streamer.h": "c",
     "memory.h": "c",
     "disk.h": "c",
-    "kheap.h": "c"
+    "kheap.h": "c",
+    "charconv": "c",
+    "chrono": "c",
+    "optional": "c",
+    "format": "c",
+    "ratio": "c",
+    "system_error": "c",
+    "array": "c",
+    "functional": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "utility": "c",
+    "cstring": "c"
   }
 }

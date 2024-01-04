@@ -4,7 +4,9 @@
 #include "../status.h"
 #include "../kernel.h"
 #include "../config.h"
+#include "../string/string.h"
 #include "fat/fat16.h"
+#include "../disk/disk.h"
 
 struct filesystem* filesystems[BENOS_MAX_FILESYSTEMS];
 struct file_descriptor* file_descriptors[BENOS_MAX_FILE_DESCRIPTORS];
@@ -86,15 +88,74 @@ struct filesystem* fs_resolve(struct disk* disk) {
     return fs;
 }
 
+// choosing a file mode
+FILE_MODE file_get_mode_by_string(const char* str) {
+    FILE_MODE mode = FILE_MODE_INVALID;
+
+    if (strncmp(str, "r", 1) == 0) {
+        mode = FILE_MODE_READ;
+    } else if (strncmp(str, "w", 1) == 0) {
+        mode = FILE_MODE_WRITE;
+    } else if (strncmp(str, "a", 1) == 0) {
+        mode = FILE_MODE_APPEND;
+    }
+
+    return mode;
+}
+
 //opening a file in c (locate correct filesystem, call open)
-int fopen(const char* filename, const char* mode) {
+int fopen(const char* filename, const char* mode_str) {
     int res = 0;
-    struct path_part* root_path = pathparser_parse(filename, NULL);
+    struct path_root* root_path = pathparser_parse(filename, NULL);
     if (!root_path) {
         res = -EINVARG;
         goto out;
     }
 
+    // can't have just a root path 0:/
+    if(!root_path->first) {
+        res = -EINVARG;
+        goto out;
+    }
+
+    // ensure disk we are reading from exists
+    struct disk* disk = disk_get(root_path->drive_no);
+    if (!disk) {
+        res = -EIO;
+        goto out;
+    }
+
+    if (!disk->filesystem) {
+        res = -EIO;
+        goto out;
+    }
+
+    FILE_MODE mode = file_get_mode_by_string(mode_str);
+    if (mode == FILE_MODE_INVALID) {
+        res = -EINVARG;
+        goto out;
+    }
+
+    void* descriptor_private_data = disk->filesystem->open(disk, root_path->first, mode);
+    if (ISERR(descriptor_private_data)) {
+        res = ERROR_I(descriptor_private_data);
+        goto out;
+    }
+
+    struct file_descriptor* desc = 0;
+    res = file_new_descriptor(&desc);
+    if (res < 0) {
+        goto out;
+    }
+    desc->fs = disk->filesystem;
+    desc->private_data = descriptor_private_data;
+    desc->disk = disk;
+    res = desc->index;
+
 out:
+    // fopen should always return a positive number
+    if (res < 0) {
+        res = 0;
+    }
     return res;
 }
