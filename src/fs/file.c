@@ -160,6 +160,34 @@ out:
     return res;
 }
 
+int fstat(int fd, struct file_stat* stat) {
+    int res = 0;
+    struct file_descriptor* desc = file_get_descriptor(fd);
+    if (!desc) {
+        res = -EIO;
+        goto out;
+    }
+
+    res = desc->fs->stat(desc->private_data, stat);
+
+out:
+    return res;
+}
+
+int fclose (int fd) {
+    int res = 0;
+    struct file_descriptor* desc = file_get_descriptor(fd);
+    if (!desc) {
+        res = -EIO;
+        goto out;
+    }
+
+    res = desc->fs->close(desc->private_data);
+
+out:
+    return res;
+}
+
 int fseek(int fd, int offset, FILE_SEEK_MODE whence) {
     int res = 0;
     struct file_descriptor* desc = file_get_descriptor(fd);
