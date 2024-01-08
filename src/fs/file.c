@@ -159,3 +159,22 @@ out:
     }
     return res;
 }
+
+int fread(void* ptr, uint32_t size, uint32_t nmemt, int fd) {
+    int res = 0;
+    if (size == 0 || nmemt == 0) {
+        res = -EINVARG;
+        goto out;
+    }
+
+    struct file_descriptor* desc = file_get_descriptor(fd);
+    if (!desc) {
+        res = -EINVARG;
+        goto out;
+    }
+
+    res = desc->fs->read(desc->disk, desc->private_data, size, nmemt, (char*) ptr);
+
+out:
+    return res;
+}
