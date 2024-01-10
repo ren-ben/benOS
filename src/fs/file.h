@@ -40,7 +40,7 @@ struct file_stat {
     uint32_t size;
 };
 
-typedef int (*FS_STAT_FUNCTION)(void* private, struct file_stat* stat);
+typedef int (*FS_STAT_FUNCTION)(struct disk* disk, void* private, struct file_stat* stat);
 
 struct filesystem {
     //fs should ret zero from res if provided disk is using its fs

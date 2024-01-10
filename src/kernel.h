@@ -1,6 +1,7 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
+void panic(const char* msg);
 void kernel_main();
 void print(const char* str);
 

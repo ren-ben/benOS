@@ -100,3 +100,25 @@
 - Next file allocation table, it's optional though (as backup)
 - Now comes the root directory, which explains what files/dirs are in root. Each entry has a relative name that represents the file or dir name, attributes such as read only, the address of the first cluster representing the data, etc.
 - finally, we have our **data region**. all the data is here.
+
+# kernel land
+
+- kernel land when the processor is in its maximum privileged state
+- whilst in kernel land any area in memory can be changed
+- any cpu instruction can be run
+- also a rist of damage to the system if an error occurs persists
+- kernel land is when the processor is in a privileged protection ring such as ring 0
+
+# user land
+
+- limited processor state
+- generally, processes run in user land
+- safe bc if something goes wrong the kernel is able to intervene
+- cpu is in ring 3
+- its **NOT** a special place where processes run, its just a term to describe the processor when its in a privilege limited state
+
+### getting to user land
+
+1. setup user code and data segments
+2. setup a tts(task switch segment)
+3. pretend we are returning from an interrupt pushing appropriate flags, and data to the stack before executing an "iret" to change the cpu priv state.

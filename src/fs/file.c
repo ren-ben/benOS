@@ -50,6 +50,11 @@ void fs_init() {
     fs_load();
 }
 
+static void file_free_descriptor(struct file_descriptor* desc) {
+    file_descriptors[desc->index - 1] = 0x00;
+    kfree(desc);
+}
+
 static int file_new_descriptor(struct file_descriptor** desc_out) {
     int res = -ENOMEM;
     for (int i = 0; i < BENOS_MAX_FILE_DESCRIPTORS; i++) {
@@ -168,7 +173,7 @@ int fstat(int fd, struct file_stat* stat) {
         goto out;
     }
 
-    res = desc->fs->stat(desc->private_data, stat);
+    res = desc->fs->stat(desc->disk,desc->private_data, stat);
 
 out:
     return res;
@@ -183,6 +188,10 @@ int fclose (int fd) {
     }
 
     res = desc->fs->close(desc->private_data);
+
+    if (res == BENOS_ALL_OK) {
+        file_free_descriptor(desc);
+    }
 
 out:
     return res;
