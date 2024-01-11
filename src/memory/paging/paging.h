@@ -24,6 +24,12 @@ void enable_paging();
 
 int paging_set(uint32_t* dir, void* virt, uint32_t val);
 bool paging_is_alligned(void* addr);
+
 uint32_t* paging_4g_chunk_get_dir(struct paging_4gb_chunk* chunk);
+void paging_free_4gb(struct paging_4gb_chunk* chunk);
+
+int paging_map_to(uint32_t* dir, void* virt, void* phys, void* phys_end, int flags);
+int paging_map_range(uint32_t* dir, void* virt, void* phys, int count, int flags);
+int paging_map(uint32_t* dir, void* virt, void* phys, int flags);
 
 #endif

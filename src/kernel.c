@@ -72,7 +72,7 @@ static struct paging_4gb_chunk* kernel_chunk = 0;
 //kernel panic inducer;
 void panic(const char* msg) {
     print(msg);
-    while(1) {}
+    for (;;) ;
 }
 
 struct tss tss;
@@ -146,5 +146,5 @@ void kernel_main() {
         struct file_stat s;
         fstat(fd, &s);
     }
-    while(1) {}
+    for(;;) {}
 }
