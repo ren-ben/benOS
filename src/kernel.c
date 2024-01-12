@@ -138,13 +138,8 @@ void kernel_main() {
     -> ptr and ptr2 are the same address
     */
 
-    // enable interrupts
-    enable_interrupts();
+    
+   
 
-    int fd = fopen("0:/hello.txt", "r");
-    if (fd) {
-        struct file_stat s;
-        fstat(fd, &s);
-    }
     for(;;) {}
 }
