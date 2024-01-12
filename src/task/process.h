@@ -27,4 +27,6 @@ struct process {
     uint32_t size;
 };
 
+int process_load_for_slot(const char* fname, struct process** process, int process_slot);
+
 #endif

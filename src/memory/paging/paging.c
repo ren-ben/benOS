@@ -63,6 +63,15 @@ out:
     return res;
 }
 
+// align to the next page address if not aliged
+void* paging_align_address(void* ptr) {
+    if((uint32_t) ptr % PAGING_PAGE_SIZE) {
+        return (void*)((uint32_t)ptr + PAGING_PAGE_SIZE - ((uint32_t)ptr % PAGING_PAGE_SIZE));
+    }
+
+    return ptr;
+}
+
 int paging_map(uint32_t* dir, void* virt, void* phys, int flags) {
 
     // checking if the address is alligned
@@ -85,6 +94,8 @@ int paging_map_range(uint32_t* dir, void* virt, void* phys, int count, int flags
         virt += PAGING_PAGE_SIZE;
         phys += PAGING_PAGE_SIZE;
     }
+
+    return res;
 }
 
 
