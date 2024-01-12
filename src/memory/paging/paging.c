@@ -24,9 +24,9 @@ struct paging_4gb_chunk* paging_new_4gb(uint8_t flags) {
     //created a page directory with page tables that cover the entire 4gb of ram
 }
 
-void paging_switch(uint32_t* directory) {
-    paging_load_directory(directory);
-    curr_dir = directory;
+void paging_switch(struct paging_4gb_chunk* directory) {
+    paging_load_directory(directory->directory_entry);
+    curr_dir = directory->directory_entry;
 }
 
 void paging_free_4gb(struct paging_4gb_chunk* chunk) {
@@ -72,7 +72,7 @@ void* paging_align_address(void* ptr) {
     return ptr;
 }
 
-int paging_map(uint32_t* dir, void* virt, void* phys, int flags) {
+int paging_map(struct paging_4gb_chunk* dir, void* virt, void* phys, int flags) {
 
     // checking if the address is alligned
     if (((unsigned int)virt % PAGING_PAGE_SIZE) || ((unsigned int)phys % PAGING_PAGE_SIZE)) {
@@ -80,10 +80,10 @@ int paging_map(uint32_t* dir, void* virt, void* phys, int flags) {
     }
 
     // getting the indexes of the page directory and page table
-    return paging_set(dir, virt, (uint32_t)phys | flags);
+    return paging_set(dir->directory_entry, virt, (uint32_t)phys | flags);
 }
 
-int paging_map_range(uint32_t* dir, void* virt, void* phys, int count, int flags) {
+int paging_map_range(struct paging_4gb_chunk* dir, void* virt, void* phys, int count, int flags) {
     int res = 0;
     for (int i = 0; i < count; i++) {
         res = paging_map(dir, virt, phys, flags);
@@ -99,7 +99,7 @@ int paging_map_range(uint32_t* dir, void* virt, void* phys, int count, int flags
 }
 
 
-int paging_map_to(uint32_t* dir, void* virt, void* phys, void* phys_end, int flags) {
+int paging_map_to(struct paging_4gb_chunk* dir, void* virt, void* phys, void* phys_end, int flags) {
     int res = 0;
     if ((uint32_t)virt % PAGING_PAGE_SIZE != 0) {
         res = -EINVARG;
