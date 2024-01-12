@@ -4,6 +4,8 @@
 #include "idt/idt.h"
 #include "io/io.h"
 #include "string/string.h"
+#include "task/task.h"
+#include "task/process.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
 #include "disk/disk.h"
@@ -14,6 +16,7 @@
 #include "config.h"
 #include "memory/memory.h"
 #include "task/tss.h"
+#include "status.h"
 
 //a pointer to vmemory
 uint16_t* video_memory = 0;
@@ -138,8 +141,13 @@ void kernel_main() {
     -> ptr and ptr2 are the same address
     */
 
-    
-   
+   struct process* process = 0;
+   int res = process_load("0:/blank.bin", &process);
+   if (res != BENOS_ALL_OK) {
+         panic("Failed to load process!");
+   }
+
+   task_run_first_ever_task();
 
     for(;;) {}
 }
