@@ -95,7 +95,7 @@ int task_switch(struct task* task) {
 }
 
 // saves the state of the current task
-int task_save_state(struct task* task, struct interrupt_frame* frame) {
+void task_save_state(struct task* task, struct interrupt_frame* frame) {
     task->registers.ip = frame->ip;
     task->registers.cs = frame->cs;
     task->registers.flags = frame->flags;

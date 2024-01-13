@@ -34,4 +34,6 @@
 
 #define BENOS_MAX_PROCESSES 12
 
+#define BENOS_MAX_ISR80H_COMMANDS 1024
+
 #endif
