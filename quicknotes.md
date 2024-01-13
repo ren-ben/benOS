@@ -122,3 +122,13 @@
 1. setup user code and data segments
 2. setup a tts(task switch segment)
 3. pretend we are returning from an interrupt pushing appropriate flags, and data to the stack before executing an "iret" to change the cpu priv state.
+
+### communication with the kernel from a process
+
+#### user program calls interrupt using the interrupt instruction
+
+Let's pretend we have a k-op that's represented by code 1 (print a message to the screen)
+
+1. user program sets the eax reg to 1 (k-op for print operations)
+2. user program pushes the address of the message that should be printed to the screen
+3. user program issues an interrupt to the kernel. Interrupt number used is 0x80 bc in this hypothetical example we decided to use 0x80 for handling commands to the kernel.

@@ -1,5 +1,6 @@
 [BITS 32]
 global _start ; tell linker entry point
+global kernel_registers ; tell linker where to find kernel_registers
 extern kernel_main ; tell linker where to find kernel_start
 CODE_SEG equ 0x08
 DATA_SEG equ 0x10
@@ -31,5 +32,13 @@ _start:
 
     call kernel_main
     jmp $
+
+kernel_registers:
+    mov ax, 10
+    mov ds, ax
+    mov es, ax
+    mov gs, ax
+    mov fs, ax
+    ret
 
 times 512-($-$$) db 0 ; for solving allignment isues

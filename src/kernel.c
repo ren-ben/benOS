@@ -78,6 +78,11 @@ void panic(const char* msg) {
     for (;;) ;
 }
 
+void kernel_page() {
+    kernel_registers();
+    paging_switch(kernel_chunk);
+}
+
 struct tss tss;
 
 struct gdt gdt_real[BENOS_TOTAL_GDT_SEGMENTS];
