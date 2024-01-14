@@ -7,6 +7,8 @@
 #include "../string/string.h"
 #include "../kernel.h"
 #include "../memory/paging/paging.h"
+#include "../loader/formats/elfloader.h"
+
 
 // current running process
 static struct process* curr_process = 0;
@@ -62,6 +64,7 @@ static int process_load_binary(const char* fname, struct process* process) {
         goto out;
     }
 
+    process->filetype = PROCESS_FILETYPE_BINARY;
     process->ptr = program_data_ptr;
     process->size = stat.size;
 
@@ -70,9 +73,27 @@ out:
     return res;
 }
 
+static int process_load_elf(const char* fname, struct process* process) {
+    int res = 0;
+    struct elf_file* elf_file = 0;
+    res = elf_load(fname, &elf_file);
+
+    if (ISERR(res)) {
+        goto out;
+    }
+
+    process->filetype = FILE_TYPE_ELF;
+    process->elf_type = elf_file;
+out:
+    return res;
+}
+
 static int process_load_data(const char* fname, struct process* process) {
     int res = 0;
-    res = process_load_binary(fname, process);
+    res = process_load_elf(fname, process);
+    if (res == -EINFORMAT) {
+        res = process_load_binary(fname, process);
+    }
     return res;
 }
 
@@ -82,8 +103,25 @@ int process_map_binary(struct process* process) {
     return res; 
 }
 
+int process_map_elf(struct process* process) {
+    int res = 0;
+
+    return res;
+}
+
 int process_map_memory(struct process* process) {
     int res = 0;
+
+    switch(process->filetype) {
+        case PROCESS_FILETYPE_ELF:
+            res = process_map_elf(process);
+            break;
+        case PROCESS_FILETYPE_BINARY:
+            res = process_map_binary(process);
+            break;
+        default:
+            panic("Unknown process filetype\n");
+    }
     res = process_map_binary(process);
     if (res < 0) {
         goto out;

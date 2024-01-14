@@ -5,6 +5,10 @@
 #include "../config.h"
 #include "task.h"
 
+#define PROCESS_FILETYPE_ELF 0
+#define PROCESS_FILETYPE_BINARY 1
+
+typedef unsigned char PROCESS_FILETYPE;
 struct process {
     // process id
     uint16_t id;
@@ -16,6 +20,15 @@ struct process {
 
     // memory (malloc)  allocations of the process
     void* allocations[BENOS_MAX_PROGRAM_ALLOCATIONS];
+
+    PROCESS_FILETYPE filetype;
+    union
+    {
+        // physical pointer to process memory
+        void* ptr;
+        struct elf_file* elf;
+    };
+    
 
     // physical pointer to process memory
     void* ptr;

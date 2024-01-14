@@ -84,7 +84,7 @@ int elf_validate_loaded(struct elf_header* elf_header) {
        elf_valid_signature(elf_header)
     && elf_valid_class(elf_header)
     && elf_valid_encoding(elf_header)
-    && elf_program_header(elf_header)) ? BENOS_ALL_OK : -EINVARG;
+    && elf_program_header(elf_header)) ? BENOS_ALL_OK : -EINFORMAT;
 }
 
 int elf_process_phdr_pt_load(struct elf_file* elf_file, struct elf32_phdr* phdr) {

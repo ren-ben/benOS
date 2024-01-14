@@ -24,7 +24,9 @@
     "cstring": "c",
     "stdint.h": "c",
     "*.tcc": "c",
-    "algorithm": "c"
+    "algorithm": "c",
+    "file.h": "c",
+    "status.h": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }
