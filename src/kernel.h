@@ -4,6 +4,7 @@
 void panic(const char* msg);
 void kernel_main();
 void print(const char* str);
+void ter_writechar(char character, char color);
 void kernel_page();
 void kernel_registers();
 

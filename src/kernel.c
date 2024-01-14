@@ -36,6 +36,20 @@ void ter_putchar(int x, int y, char character, char color) {
     video_memory[y * VGA_WIDTH + x] = ter_make_character(character, color);
 }
 
+void terminal_backspace() {
+    if (ter_row == 0 && ter_column == 0) {
+        return;
+    }
+    if (ter_column == 0) {
+        ter_column = VGA_WIDTH;
+        ter_row--;
+    } 
+    
+    ter_column--;
+    ter_writechar(' ', 15);
+    ter_column--;
+}
+
 //writes a character to the screen
 void ter_writechar(char character, char color) {
     if (character == '\n') {
@@ -43,6 +57,12 @@ void ter_writechar(char character, char color) {
         ter_row++;
         return;
     }
+
+    if (character == 0x08) {
+        terminal_backspace();
+        return;
+    }
+    
     ter_putchar(ter_column, ter_row, character, color);
     ter_column++;
     if (ter_column >= VGA_WIDTH) {
