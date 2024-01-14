@@ -15,10 +15,13 @@ int main(int argc, char** argv) {
     void* ptr = malloc(512);
     free(ptr);
 
+    char buf[1024];
+    benos_terminal_readline(buf, 1024, true);
+
+    print(buf);
+    
     while(1) {
-        if (getkey() != 0) {
-            print("You pressed a key!\n");
-        }
+        
     }
     return 0;
 }

@@ -3,7 +3,7 @@
 section .asm
 
 global print:function
-global getkey:function
+global benos_getkey:function
 global benos_malloc:function
 global benos_free:function
 global benos_putchar:function
@@ -20,7 +20,7 @@ print:
     ret
 
 ; int getkey()
-getkey
+benos_getkey:
     push ebp
     mov ebp, esp
     mov eax, 2 ; command getkey

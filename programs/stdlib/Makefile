@@ -1,4 +1,4 @@
-FILES=./build/start.o ./build/benos.o ./build/stdlib.o ./build/stdio.o
+FILES=./build/start.o ./build/benos.asm.o ./build/benos.o ./build/stdlib.o ./build/stdio.o
 INCLUDES=-I./src
 FLAGS= -g -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -8,8 +8,11 @@ all: ${FILES}
 ./build/start.o: ./src/start.asm
 	nasm -f elf32 ./src/start.asm -o ./build/start.o
 
-./build/benos.o: ./src/benos.asm
-	nasm -f elf32 ./src/benos.asm -o ./build/benos.o
+./build/benos.asm.o: ./src/benos.asm
+	nasm -f elf32 ./src/benos.asm -o ./build/benos.asm.o
+
+./build/benos.o: ./src/benos.c
+	i686-elf-gcc ${INCLUDES} $(FLAGS) -std=gnu99 -c ./src/benos.c -o ./build/benos.o
 
 ./build/stdlib.o: ./src/stdlib.c
 	i686-elf-gcc ${INCLUDES} $(FLAGS) -std=gnu99 -c ./src/stdlib.c -o ./build/stdlib.o
