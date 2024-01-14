@@ -6,6 +6,7 @@ global print:function
 global getkey:function
 global benos_malloc:function
 global benos_free:function
+global benos_putchar:function
 
 ; void print(const char* fname)
 print:
@@ -24,6 +25,17 @@ getkey
     mov ebp, esp
     mov eax, 2 ; command getkey
     int 0x80
+    pop ebp
+    ret
+
+; void benos_putchar(char c)
+benos_putchar:
+    push ebp
+    mov ebp, esp
+    mov eax, 3 ; command putchar
+    push dword[ebp+8] ; variable "c"
+    int 0x80
+    add esp, 4
     pop ebp
     ret
 
