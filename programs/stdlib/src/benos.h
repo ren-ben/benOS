@@ -12,5 +12,6 @@ void benos_free(void* ptr);
 void benos_putchar(char c);
 int benos_getkeyblock();
 void benos_terminal_readline(char* out, int max, bool out_while_typing);
+void benos_process_load_start(const char* fname);
 
 #endif

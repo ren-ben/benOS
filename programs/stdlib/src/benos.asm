@@ -7,6 +7,7 @@ global benos_getkey:function
 global benos_malloc:function
 global benos_free:function
 global benos_putchar:function
+global benos_process_load_start:function
 
 ; void print(const char* fname)
 print:
@@ -56,6 +57,17 @@ benos_free:
     mov ebp, esp
     mov eax, 5 ; command free
     push dword[ebp+8] ; variable "ptr"
+    int 0x80
+    add esp, 4
+    pop ebp
+    ret
+
+; void benos_process_load_start(const char* fname)
+benos_process_load_start:
+    push ebp
+    mov ebp, esp
+    mov eax, 6 ; command process_load_start (starts a process)
+    push dword[ebp+8] ; variable "fname"
     int 0x80
     add esp, 4
     pop ebp

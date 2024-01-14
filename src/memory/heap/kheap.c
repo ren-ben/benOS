@@ -8,7 +8,6 @@ struct heap kernel_heap;
 struct heap_table kernel_heap_table;
 
 void kheap_init() {
-    print("\nInitializing kernel heap\n");
 
     // create the heap table
     int total_table_entries = BENOS_HEAP_SIZE_BYTES / BENOS_HEAP_BLOCK_SIZE;
