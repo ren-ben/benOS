@@ -108,6 +108,81 @@ static struct process_allocation* process_get_allocation_by_addr(struct process*
     return 0;
 }
 
+int process_terminate_allocations(struct process* process) {
+    for (int i = 0; i < BENOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        process_free(process, process->allocations[i].ptr);
+    }
+
+    return 0;
+}
+
+int process_free_binary_data(struct process* process) {
+    kfree(process->ptr);
+    return 0;
+}
+
+int process_free_elf_data(struct process* process) {
+    elf_close(process->elf);
+    return 0;
+}
+
+int process_free_progran_data(struct process* process) {
+    int res = 0;
+    switch(process->filetype) {
+        case PROCESS_FILETYPE_BINARY:
+            res = process_free_binary_data(process);
+            break;
+        case PROCESS_FILETYPE_ELF:
+            res = process_free_elf_data(process);
+            break;
+        default:
+            res = -EINVARG;
+    }
+
+    return res;
+}
+
+void process_switch_to_any() {
+    for (int i = 0; i < BENOS_MAX_PROCESSES; i++) {
+        if (processes[i]) {
+            process_switch(processes[i]);
+            return;
+        }
+    }
+
+    // no processes left
+    panic("No processes left to switch to");
+}
+
+static void process_unlink(struct process* process) {
+    processes[process->id] = 0x00;
+
+    if (curr_process == process) {
+        process_switch_to_any();
+    }
+}
+
+int process_terminate(struct process* process) {
+    
+    int res = 0;
+    res = process_terminate_allocations(process);
+    if (res < 0) {
+        goto out;
+    }
+
+    process_free_progran_data(process);
+    // free the process stack memory
+    kfree(process->stack);
+
+    // free the process task
+    task_free(process->task);
+    // unline the process from the process array
+    process_unlink(process);
+
+out:
+    return res;
+}
+
 void process_get_args(struct process* process, int* argc, char*** argv) {
     *argc = process->args.argc;
     *argv = process->args.argv;

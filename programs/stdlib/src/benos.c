@@ -4,7 +4,7 @@
 struct command_arg* benos_parse_command(const char* command, int max) {
     struct command_arg* root_command = 0;
     // command buffer
-    char scommand[1024];
+    char scommand[1025];
     if (max >= (int) sizeof(scommand)) {
         return 0;
     }
@@ -79,3 +79,14 @@ void benos_terminal_readline(char* out, int max, bool out_while_typing) {
     // add null terminator
     out[i] = 0x00;
 } 
+
+int benos_system_run(const char* command) {
+    char buf[1024];
+    strncpy(buf, command, sizeof(buf));
+    struct command_arg* root_command_arg = benos_parse_command(buf, sizeof(buf));
+    if (!root_command_arg) {
+        return -1;
+    }
+
+    return benos_system(root_command_arg);;
+}

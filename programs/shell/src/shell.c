@@ -10,7 +10,8 @@ int main(int argc, char** argv)
         print("benos> ");
         char buf[1024];
         benos_terminal_readline(buf, sizeof(buf), true);
-        benos_process_load_start(buf);
+        print("\n");
+        benos_system_run(buf);
         print("\n");
     }
     return 0;
