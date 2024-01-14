@@ -18,6 +18,7 @@
 #include "memory/memory.h"
 #include "task/tss.h"
 #include "status.h"
+#include "keyboard/keyboard.h"
 
 //a pointer to vmemory
 uint16_t* video_memory = 0;
@@ -139,6 +140,9 @@ void kernel_main() {
 
     // initialize the isr80h
     isr80h_register_commands();
+
+    // initialize the keyboard
+    keyboard_init();
 
     /*
     char* ptr2 = (char*) 0x1000;
