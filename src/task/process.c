@@ -10,6 +10,7 @@
 #include "../loader/formats/elfloader.h"
 
 
+
 // current running process
 static struct process* curr_process = 0;
 
@@ -63,6 +64,37 @@ void* process_malloc(struct process* process, size_t size) {
 
     process->allocations[index] = ptr;
     return ptr;
+}
+
+static bool process_is_process_pointer(struct process* process, void* ptr) {
+    for (int i = 0; i < BENOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i] == ptr) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+static void process_allocation_ujoin(struct process* process, void* ptr) {
+    for (int i = 0; i < BENOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i] == ptr) {
+            process->allocations[i] = 0x00;
+        }
+    }
+}
+
+void process_free(struct process* process, void* ptr) {
+    // not this processes pointer? then we can't free it
+    if(!process_is_process_pointer(process, ptr)) {
+        return;
+    }
+
+    // unjoin the allocation
+    process_allocation_ujoin(process, ptr);
+
+    // free the pointer
+    kfree(ptr);
 }
 
 static int process_load_binary(const char* fname, struct process* process) {
@@ -143,7 +175,7 @@ static int process_map_elf(struct process* process) {
         if (phdr->p_flags & PF_W) {
             flags |= PAGING_IS_WRITABLE;
         }
-        res = paging_map_to(process->task->page_directory, paging_align_to_lower_page((void*)phdr->p_vaddr), paging_align_to_lower_page(phdr_phys_address), paging_align_address(phdr_phys_address+phdr->p_filesz), flags);
+        res = paging_map_to(process->task->page_directory, paging_align_to_lower_page((void*)phdr->p_vaddr), paging_align_to_lower_page(phdr_phys_address), paging_align_address(phdr_phys_address+phdr->p_memsz), flags);
         if (ISERR(res)) {
             break;
         }

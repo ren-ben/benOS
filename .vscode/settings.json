@@ -29,7 +29,8 @@
     "status.h": "c",
     "elfloader.h": "c",
     "benos.h": "c",
-    "task.h": "c"
+    "task.h": "c",
+    "stddef.h": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }

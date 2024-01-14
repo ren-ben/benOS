@@ -6,11 +6,12 @@ int main(int argc, char** argv) {
     print("Hello how are you?\n");
 
     void* ptr = malloc(512);
+    free(ptr);
 
-    if (ptr) {
-        print("Malloc succeeded!\n");
+    if (ptr != 0) {
+        print("ptr is not null!\n");
     } else {
-        print("Malloc failed!\n");
+        print("ptr is null!\n");
     }
 
     while(1) {
