@@ -8,6 +8,7 @@
 #include "task/process.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
+#include "isr80h/isr80h.h"
 #include "disk/disk.h"
 #include "fs/pparser.h"
 #include "disk/streamer.h"
@@ -135,6 +136,9 @@ void kernel_main() {
 
     // enable paging
     enable_paging();
+
+    // initialize the isr80h
+    isr80h_register_commands();
 
     /*
     char* ptr2 = (char*) 0x1000;

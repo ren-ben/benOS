@@ -87,7 +87,7 @@ int paging_map_range(struct paging_4gb_chunk* dir, void* virt, void* phys, int c
     int res = 0;
     for (int i = 0; i < count; i++) {
         res = paging_map(dir, virt, phys, flags);
-        if (res == 0) {
+        if (res < 0) {
             break;
         }
 
@@ -149,4 +149,15 @@ int paging_set(uint32_t* dir, void* virt, uint32_t val) {
     table[table_i] = val;
 
     return 0;
+}
+
+// return physical address of a page table entry in a page directory with flags or'd onto it
+uint32_t paging_get(uint32_t* dir, void* virt) {
+    uint32_t dir_i = 0;
+    uint32_t table_i = 0;
+
+    paging_get_indexes(virt, &dir_i, &table_i);
+    uint32_t entry = dir[dir_i];
+    uint32_t* table = (uint32_t*)(entry & 0xFFFFF000);
+    return table[table_i];
 }
