@@ -179,6 +179,8 @@ int process_terminate(struct process* process) {
     // unline the process from the process array
     process_unlink(process);
 
+    print("Process was terminated");
+
 out:
     return res;
 }

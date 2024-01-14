@@ -27,5 +27,6 @@ struct command_arg* benos_parse_command(const char* command, int max);
 void benos_process_get_args(struct process_args* args);
 int benos_system(struct command_arg* args);
 int benos_system_run(const char* command);
+void benos_exit();
 
 #endif

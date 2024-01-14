@@ -73,5 +73,6 @@ void process_free(struct process* process, void* ptr);
 
 void process_get_args(struct process* process, int* argc, char*** argv);
 int process_inject_args(struct process* process, struct command_arg* root_arg);
+int process_terminate(struct process* process);
 
 #endif

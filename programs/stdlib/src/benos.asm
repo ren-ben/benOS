@@ -10,6 +10,7 @@ global benos_putchar:function
 global benos_process_load_start:function
 global benos_process_get_args:function
 global benos_system:function
+global benos_exit:function
 
 ; void print(const char* fname)
 print:
@@ -92,6 +93,16 @@ benos_process_get_args:
     mov ebp, esp
     mov eax, 8 ; command process_get_args (gets the arguments of the current process)
     push dword[ebp+8] ; variable arguments
+    int 0x80
+    add esp, 4
+    pop ebp
+    ret
+
+; void benos_exit()
+benos_exit:
+    push ebp
+    mov ebp, esp
+    mov eax, 9 ; command exit
     int 0x80
     add esp, 4
     pop ebp
