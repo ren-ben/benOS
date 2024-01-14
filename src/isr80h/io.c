@@ -1,6 +1,7 @@
 #include "io.h"
 #include "../task/task.h"
 #include "../kernel.h"
+#include "../keyboard/keyboard.h"
 
 void* isr80h_command1_print(struct interrupt_frame* frame) {
     
@@ -10,4 +11,9 @@ void* isr80h_command1_print(struct interrupt_frame* frame) {
 
     print(buf);
     return 0;
+}
+
+void* isr80h_command2_getkey(struct interrupt_frame* frame) {
+    char c = keyboard_pop();
+    return (void*)((int)c);
 }

@@ -23,5 +23,6 @@
     "utility": "c",
     "cstring": "c",
     "stdint.h": "c"
-  }
+  },
+  "C_Cpp.errorSquiggles": "disabled"
 }

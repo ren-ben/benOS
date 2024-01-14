@@ -49,6 +49,10 @@ void keyboard_push(char c) {
         return;
     }
 
+    if (c == 0) {
+        return;
+    }
+
     int real_i = keyboard_get_tail_index(proc);
     proc->keyboard.buffer[real_i] = c;
     proc->keyboard.tail++;
