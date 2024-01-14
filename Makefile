@@ -107,9 +107,11 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 	nasm -f elf -g ./src/task/task.asm -o ./build/task/task.asm.o
 
 user_programs:
+	cd ./programs/stdlib && $(MAKE) all
 	cd ./programs/blank && $(MAKE) all
 
 user_programs_clean:
+	cd ./programs/stdlib && $(MAKE) clean
 	cd ./programs/blank && $(MAKE) clean
 
 clean: user_programs_clean
