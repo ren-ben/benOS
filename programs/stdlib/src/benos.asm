@@ -8,6 +8,7 @@ global benos_malloc:function
 global benos_free:function
 global benos_putchar:function
 global benos_process_load_start:function
+global benos_process_get_args:function
 
 ; void print(const char* fname)
 print:
@@ -68,6 +69,17 @@ benos_process_load_start:
     mov ebp, esp
     mov eax, 6 ; command process_load_start (starts a process)
     push dword[ebp+8] ; variable "fname"
+    int 0x80
+    add esp, 4
+    pop ebp
+    ret
+
+; void benos_process_get_args(struct process_args* args)
+benos_process_get_args:
+    push ebp
+    mov ebp, esp
+    mov eax, 8 ; command process_get_args (gets the arguments of the current process)
+    push dword[ebp+8] ; variable "args"
     int 0x80
     add esp, 4
     pop ebp

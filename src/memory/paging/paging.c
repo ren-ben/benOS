@@ -157,6 +157,12 @@ int paging_set(uint32_t* dir, void* virt, uint32_t val) {
     return 0;
 }
 
+void* paging_get_phys_addr(uint32_t* dir, void* virt) {
+    void* virt_addr_new = (void*) paging_align_to_lower_page(virt);
+    void* diff = (void*)((uint32_t)virt - (uint32_t)virt_addr_new);
+    return (void*)((paging_get(dir, virt_addr_new) & 0xFFFFF000) + diff);
+}
+
 // return physical address of a page table entry in a page directory with flags or'd onto it
 uint32_t paging_get(uint32_t* dir, void* virt) {
     uint32_t dir_i = 0;

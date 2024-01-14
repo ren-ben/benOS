@@ -108,6 +108,59 @@ static struct process_allocation* process_get_allocation_by_addr(struct process*
     return 0;
 }
 
+void process_get_args(struct process* process, int* argc, char*** argv) {
+    *argc = process->args.argc;
+    *argv = process->args.argv;
+}
+
+int process_count_command_args(struct command_arg* root_arg) {
+    int res = 0;
+    struct command_arg* current = root_arg;
+    while (current) {
+        res++;
+        current = current->next;
+    }
+
+    return res;
+}
+
+int process_inject_args(struct process* process, struct command_arg* root_arg) {
+    int res = 0;
+    struct command_arg* current = root_arg;
+    int i = 0;
+    int argc = process_count_command_args(root_arg);
+
+    if (argc == 0) {
+        res = -EIO;
+        goto out;
+    }
+
+    char **argv = process_malloc(process, sizeof(const char*) * argc);
+    if (!argv) {
+        res = -ENOMEM;
+        goto out;
+    }
+
+    while (current) {
+        char* arg_str = process_malloc(process, sizeof(current->arg));
+        if (!arg_str) {
+            res = -ENOMEM;
+            goto out;
+        }
+
+        strncpy(arg_str, current->arg, sizeof(current->arg));
+        argv[i] = arg_str;
+        current = current->next;
+        i++;
+    }
+
+    process->args.argc = argc;
+    process->args.argv = argv;
+
+out:
+    return res;
+}
+
 void process_free(struct process* process, void* ptr) {
 
     //unlink the pages from the process for the given address

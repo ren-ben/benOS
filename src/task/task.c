@@ -220,3 +220,7 @@ void* task_get_stack_item(struct task* task, int index) {
 
     return result;
 }
+
+void* task_virt_addr_to_phys(struct task* task, void* virt) {
+    return paging_get_phys_addr(task->page_directory->directory_entry, virt);
+}

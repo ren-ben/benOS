@@ -5,14 +5,7 @@
 
 int main(int argc, char** argv) {
     
-    char* ptr = malloc(20);
-    strcpy(ptr, "Hello world!\n");
-
-    print(ptr);
-    free(ptr);
-
-    ptr[0] = 'b';
-    
+    print(argv[0]);
     while(1) {
         
     }

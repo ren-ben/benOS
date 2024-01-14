@@ -1,4 +1,46 @@
 #include "benos.h"
+#include "string.h"
+
+struct command_arg* benos_parse_command(const char* command, int max) {
+    struct command_arg* root_command = 0;
+    // command buffer
+    char scommand[1024];
+    if (max >= (int) sizeof(scommand)) {
+        return 0;
+    }
+
+    strncpy(scommand, command, sizeof(scommand));
+    char* token = strtok(scommand, " ");
+    if (!token) {
+        goto out;
+    }
+
+    root_command = benos_malloc(sizeof(struct command_arg));
+    if (!root_command) {
+        goto out;
+    }
+
+    strncpy(root_command->arg, token, sizeof(root_command->arg));
+    root_command->next = 0;
+
+    struct command_arg* current = root_command;
+    token = strtok(NULL, " ");
+    while(token != 0) {
+        struct command_arg* new_command = benos_malloc(sizeof(struct command_arg));
+        if (!new_command) {
+            break;
+        }
+
+        strncpy(new_command->arg, token, sizeof(new_command->arg));
+        new_command->next = 0;
+        current->next = new_command;
+        current = new_command;
+        token = strtok(NULL, " ");
+    }
+
+out:
+    return root_command;
+}
 
 int benos_getkeyblock() {
     int val = 0;

@@ -34,5 +34,6 @@ int paging_map(struct paging_4gb_chunk* dir, void* virt, void* phys, int flags);
 void* paging_align_address(void* ptr);
 uint32_t paging_get(uint32_t* dir, void* virt);
 void* paging_align_to_lower_page(void* addr);
+void* paging_get_phys_addr(uint32_t* dir, void* virt);
 
 #endif
