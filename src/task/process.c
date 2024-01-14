@@ -82,8 +82,8 @@ static int process_load_elf(const char* fname, struct process* process) {
         goto out;
     }
 
-    process->filetype = FILE_TYPE_ELF;
-    process->elf_type = elf_file;
+    process->filetype = PROCESS_FILETYPE_ELF;
+    process->elf = elf_file;
 out:
     return res;
 }
@@ -103,9 +103,10 @@ int process_map_binary(struct process* process) {
     return res; 
 }
 
-int process_map_elf(struct process* process) {
+static int process_map_elf(struct process* process) {
     int res = 0;
-
+    struct elf_file* elf_file = process->elf;
+    res = paging_map_to(process->task->page_directory, paging_align_to_lower_page(elf_virtual_base(elf_file)), elf_phys_base(elf_file), paging_align_address(elf_phys_end(elf_file)), PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL | PAGING_IS_WRITABLE);
     return res;
 }
 

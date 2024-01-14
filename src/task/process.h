@@ -28,10 +28,6 @@ struct process {
         void* ptr;
         struct elf_file* elf;
     };
-    
-
-    // physical pointer to process memory
-    void* ptr;
 
     // the physical pointer to the stack
     void* stack;

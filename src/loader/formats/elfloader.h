@@ -26,9 +26,13 @@ struct elf_file {
 
     //phys end address of this binary
     void* phys_end_address;
-}
+};
 
 int elf_load(const char* fname, struct elf_file** file_out);
 void elf_close(struct elf_file* file);
+void* elf_virtual_base(struct elf_file* file);
+void* elf_virtual_end(struct elf_file* file);
+void* elf_phys_base(struct elf_file* file);
+void* elf_phys_end(struct elf_file* file);
 
 #endif

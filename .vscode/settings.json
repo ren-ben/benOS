@@ -26,7 +26,8 @@
     "*.tcc": "c",
     "algorithm": "c",
     "file.h": "c",
-    "status.h": "c"
+    "status.h": "c",
+    "elfloader.h": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }
