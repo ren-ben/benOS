@@ -33,6 +33,8 @@ struct process {
     } keyboard;
 };
 
+int process_switch(struct process* proc);
+int process_load_switch(const char* fname, struct process** process);
 int process_load_for_slot(const char* fname, struct process** process, int process_slot);
 int process_load(const char* fname, struct process** process);
 struct process* process_current();

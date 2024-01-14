@@ -1,5 +1,6 @@
 {
   "files.associations": {
+    "*.embeddedhtml": "html",
     "kernel.h": "c",
     "io.h": "c",
     "string.h": "c",
@@ -20,6 +21,7 @@
     "tuple": "c",
     "type_traits": "c",
     "utility": "c",
-    "cstring": "c"
+    "cstring": "c",
+    "stdint.h": "c"
   }
 }

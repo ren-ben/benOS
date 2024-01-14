@@ -30,6 +30,11 @@ struct process* process_get(int process_id) {
     return processes[process_id];
 }
 
+int process_switch(struct process* proc) {
+    curr_process = proc;
+    return 0;
+}
+
 static int process_load_binary(const char* fname, struct process* process) {
     int res = 0;
 
@@ -114,6 +119,15 @@ int process_load(const char* fname, struct process** process) {
     res = process_load_for_slot(fname, process, process_slot);
 
 out:
+    return res;
+}
+
+int process_load_switch(const char* fname, struct process** process) {
+    int res = process_load(fname, process);
+    if (res == 0) {
+        process_switch(*process);
+    }
+
     return res;
 }
 
