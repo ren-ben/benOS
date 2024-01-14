@@ -3,12 +3,14 @@ section .asm
 extern int21h_handler
 extern no_interrupt_handler
 extern isr80h_handler
-global int21h
+extern interrupt_handler
+
 global no_interrupt
 global idt_load
 global enable_interrupts
 global disable_interrupts
 global isr80h_wrapper
+global interrupt_pointer_table
 
 disable_interrupts:
     cli
@@ -28,13 +30,6 @@ idt_load:
     pop ebp
     ret
 
-int21h:
-    cli
-    pushad ; push all registers
-    call int21h_handler
-    popad ; pop all registers
-    sti
-    iret
 
 no_interrupt:
     cli
@@ -43,6 +38,28 @@ no_interrupt:
     popad ; pop all registers
     sti
     iret
+
+%macro interrupt 1
+    global int%1
+    int%1:    
+        ; INTERRUPT FRAME START
+        ; ALREADY PUSHED BY CPU UPON ENTRY TO THIS INT
+        ; ip, cs, flags, sp, ss (32bit)
+        pushad ; push all registers to stack
+        ; INT FRAME END
+        push esp
+        push dword %1
+        call interrupt_handler
+        add esp, 8 ; remove the pushed esp and %i
+        popad
+        iret
+%endmacro
+
+%assign i 0
+%rep 512
+    interrupt i
+%assign i i+1
+%endrep
 
 
 isr80h_wrapper:
@@ -71,3 +88,14 @@ isr80h_wrapper:
 section .data
 ; stores return results from isr80h_handler
 tmp_res dd 0
+
+%macro interrupt_array_entry 1
+    dd int%1
+%endmacro
+
+interrupt_pointer_table:
+%assign i 0
+%rep 512
+    interrupt_array_entry i
+%assign i i+1
+%endrep
