@@ -22,7 +22,9 @@
     "type_traits": "c",
     "utility": "c",
     "cstring": "c",
-    "stdint.h": "c"
+    "stdint.h": "c",
+    "*.tcc": "c",
+    "algorithm": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }
