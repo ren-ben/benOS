@@ -8,6 +8,7 @@
 #include "../idt/idt.h"
 #include "../memory/paging/paging.h"
 #include "../string/string.h"
+#include "../loader/formats/elfloader.h"
 
 // current running task
 struct task* current_task = 0;
@@ -186,8 +187,15 @@ int task_init(struct task* task, struct process* process) {
         return -EIO;
     }
 
+    
+
     // ip -> when the task was executing before an interrupt (we're in charge of setting this)
     task->registers.ip = BENOS_PROGRAM_VIRTUAL_ADDRESS;
+
+    if (process->filetype == PROCESS_FILETYPE_ELF) {
+        task->registers.ip = elf_header(process->elf)->e_entry;
+    }
+
     task->registers.ss = USER_DATA_SEGMENT;
     task->registers.cs = USER_CODE_SEGMENT;
     task->registers.esp = BENOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START;
