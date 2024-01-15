@@ -175,19 +175,29 @@ void kernel_main() {
     -> ptr and ptr2 are the same address
     */
 
-   struct process* process = 0;
-   int res = process_load_switch("0:/shell.elf", &process);
-   if (res != BENOS_ALL_OK) {
-         panic("Failed to load shell!");
-   }
+    struct process* process = 0;
+    int res = process_load_switch("0:/blank.elf", &process);
+    if (res != BENOS_ALL_OK) {
+          panic("Failed to load shell!");
+    }
 
-   struct command_arg arg;
-   strcpy(arg.arg, "Testing!");
+    struct command_arg arg;
+    strcpy(arg.arg, "Testing!");
     arg.next = 0x00;
 
     process_inject_args(process, &arg);
 
-   task_run_first_ever_task();
+    res = process_load_switch("0:/blank.elf", &process);
+    if (res != BENOS_ALL_OK) {
+          panic("Failed to load shell!");
+    }
 
-    for(;;) {}
+    strcpy(arg.arg, "ABC!");
+    arg.next = 0x00;
+
+    process_inject_args(process, &arg);
+
+    task_run_first_ever_task();
+
+    while(1) {}
 }

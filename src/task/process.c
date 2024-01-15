@@ -170,7 +170,10 @@ int process_terminate(struct process* process) {
         goto out;
     }
 
-    process_free_progran_data(process);
+    res = process_free_progran_data(process);
+    if (res < 0) {
+        goto out;
+    }
     // free the process stack memory
     kfree(process->stack);
 

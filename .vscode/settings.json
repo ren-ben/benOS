@@ -35,7 +35,8 @@
     "stdio.h": "c",
     "cstdio": "c",
     "stdarg.h": "c",
-    "process.h": "c"
+    "process.h": "c",
+    "keyboard.h": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }

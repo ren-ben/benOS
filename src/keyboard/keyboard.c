@@ -43,6 +43,14 @@ void keyboard_backspace(struct process* proc) {
     proc->keyboard.buffer[real_i] = 0x00;
 }
 
+void keyboard_set_capslock(struct keyboard* keyboard, KEYBOARD_CAPS_LOCK_STATE state) {
+    keyboard->caps_lock_state = state;
+}
+
+KEYBOARD_CAPS_LOCK_STATE keyboard_get_capslock(struct keyboard* keyboard) {
+    return keyboard->caps_lock_state;
+}
+
 void keyboard_push(char c) {
     struct process* proc = process_current();
     if(!proc) {
